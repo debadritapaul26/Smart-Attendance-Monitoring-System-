@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Attendance Management System</title>
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --card-bg: #ffffff;
+      --text: #1c1f24;
+      --muted: #6c757d;
+      --border: #d0d7de;
+      --primary: #007bff;
+      --primary-dark: #0056b3;
+      --danger: #dc3545;
+      --table-head: #f0f0f0;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    .dark {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --text: #e6edf3;
+      --muted: #9da5b4;
+      --border: #30363d;
+      --primary: #58a6ff;
+      --primary-dark: #1f6feb;
+      --danger: #ff6b72;
+      --table-head: #1c2128;
+      --shadow: rgba(0, 0, 0, 0.6);
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 20px auto;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px var(--shadow);
+      border: 1px solid var(--border);
+      transition: background 0.3s ease, border 0.3s ease;
+    }
+
+    h2, h3 {
+      margin-top: 0;
+    }
+
+    input,
+    select,
+    button {
+      padding: 10px;
+      margin: 6px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: transparent;
+      color: var(--text);
+      font-size: 15px;
+      transition: all 0.2s ease;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 3px var(--primary);
+    }
+
+    button {
+      background-color: var(--primary);
+      color: #fff;
+      cursor: pointer;
+      border: none;
+    }
+
+    button:hover {
+      background-color: var(--primary-dark);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+
+    th {
+      background: var(--table-head);
+    }
+
+    .student-row-btn {
+      cursor: pointer;
+      background-color: var(--danger);
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 5px;
+    }
+
+    .student-row-btn:hover {
+      background-color: #c82333;
+    }
+
+    /* Login Section */
+    #loginSection {
+      position: relative;
+      max-width: 420px;
+      margin: 80px auto;
+      padding: 40px 25px;
+      background: url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b') center/cover no-repeat;
+      color: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    #loginSection::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 0;
+    }
+
+    #loginSection * {
+      position: relative;
+      z-index: 1;
+    }
+
+    #loginSection input,
+    #loginSection button {
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border: 1px solid rgba(16, 15, 15, 0.4);
+      margin: 10px 0;
+    }
+
+    /* Ensure username/password text and placeholders are white */
+    #loginSection #username,
+    #loginSection #password {
+      color: #fff;
+    }
+
+    #loginSection input::placeholder {
+      color: rgba(255, 255, 255, 0.85);
+      opacity: 1;
+    }
+    #loginSection input::-webkit-input-placeholder { color: rgba(255, 255, 255, 0.85); }
+    #loginSection input:-ms-input-placeholder { color: rgba(255, 255, 255, 0.85); }
+
+    /* Handle autofill text color in WebKit browsers */
+    #loginSection input:-webkit-autofill,
+    #loginSection input:-webkit-autofill:hover,
+    #loginSection input:-webkit-autofill:focus {
+      -webkit-text-fill-color: #fff !important;
+      background-color: rgba(255,255,255,0.12) !important;
+      box-shadow: 0 0 0px 1000px rgba(255,255,255,0.02) inset;
+    }
+
+    #loginSection button:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Theme Toggle Switch */
+    .theme-toggle {
+      position: fixed;
+      top: 15px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 26px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--primary);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* QR Modal */
+    #qrBackdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    #qrModal {
+      background: var(--card-bg);
+      padding: 16px;
+      border-radius: 8px;
+      width: 360px;
+      text-align: center;
+      box-shadow: 0 4px 10px var(--shadow);
+    }
+
+    /* Scanner styles (from the additional snippet) */
+    #reader {
+      width: 100%;
+      max-width: 420px;
+      margin: 20px auto;
+      border: 2px solid var(--primary);
+      border-radius: 8px;
+      padding: 8px;
+      box-sizing: border-box;
+      background: rgba(255,255,255,0.02);
+    }
+    #scanStatus {
+      text-align: center;
+      font-weight: bold;
+      color: var(--primary);
+      margin-top: 10px;
+    }
+    /* Check logs table centered */
+    #checkLogBody td, #checkLogBody th { text-align:left; }
+  </style>
+</head>
+
+<body>
+  <!-- Dark Mode Toggle -->
+  <div class="theme-toggle">
+    🌞
+    <label class="switch">
+      <input type="checkbox" id="themeSwitch" />
+      <span class="slider"></span>
+    </label>
+    🌙
+  </div>
+
+  <!-- LOGIN -->
+   <div id="loginSection" class="container">
+        <h2 style="margin-top:0; font-size:1.25rem;">Login</h2>
+        <div class="controls" style="display:flex; flex-direction:column; gap:10px;">
+            <input type="text" id="username" placeholder="Username"
+                style="width:100%; padding:8px 10px; font-size:14px; box-sizing:border-box;" />
+            <input type="password" id="password" placeholder="Password"
+                style="width:100%; padding:8px 10px; font-size:14px; box-sizing:border-box;" />
+            <div style="display:flex; justify-content:center; margin-top:6px;">
+                <button onclick="login()" style="padding:8px 12px; font-size:14px; width:100px;">Login</button>
+            </div>
+        </div>
+    </div>
+
+  <!-- MAIN -->
+  <div id="mainContent" class="container hidden">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2>Student Attendance Management</h2>
+      <button onclick="logout()">Logout</button>
+    </div> 
+    
+
+    <section>
+      <h3>Add New Student</h3>
+      <div class="student-form">
+        <input type="text" id="studentName" placeholder="Name" />
+        <input type="text" id="rollNo" placeholder="Roll No" />
+        <input type="tel" id="phone" placeholder="Phone" />
+        <input type="email" id="email" placeholder="Email" />
+        <select id="department">
+          <option value="">Department</option>
+          <option value="CSE">CSE</option>
+          <option value="EE">EE</option>
+          <option value="ME">ME</option>
+        </select>
+        <button onclick="addStudent()">Save</button>
+        <button onclick="clearForm()">Clear</button>
+      </div>
+    </section>
+
+    <section style="margin-top:16px;">
+      <label>Date:</label>
+      <input type="date" id="attendanceDate" />
+      <button onclick="markAll(true)">Mark All Present</button>
+      <button onclick="markAll(false)">Mark All Absent</button>
+      <button onclick="exportAttendance()">Export CSV</button>
+    </section>
+
+    <section id="attendanceSection" style="margin-top:14px;">
+      <h3>Student List / Attendance</h3>
+      <table id="studentTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Roll</th>
+            <th>Dept</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>QR</th>
+            <th>Present</th>
+            <th>Remove</th>
+          </tr>
+        </thead>
+        <tbody id="studentTbody"></tbody>
+      </table>
+    </section>
+
+    <!-- QR Scanner / Check-in Section (ADDED) -->
+    <section style="margin-top:20px;">
+      <h3>QR Check-In / Check-Out</h3>
+      <p style="text-align:center;">Allow camera access when prompted, then show a student's QR code to the camera.</p>
+      <div id="reader"></div>
+      <p id="scanStatus">Initializing scanner...</p>
+
+      <h4 style="margin-top:18px;">Recent Check Logs</h4>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:40px">#</th>
+            <th>Roll</th>
+            <th>Name</th>
+            <th>Action</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody id="checkLogBody"></tbody>
+      </table> 
+    </section>
+  </div>
+
+  <!-- QR Modal -->
+  <div id="qrBackdrop">
+    <div id="qrModal">
+      <h4 id="qrTitle">Student QR</h4>
+      <div id="qrContainer" style="display:flex; align-items:center; justify-content:center; min-height:220px;"></div>
+      <a id="qrDownloadLink" href="#" style="color:var(--primary)">Download QR</a>
+      <div style="margin-top:12px;"><button onclick="closeQrModal()">Close</button></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script>
+    // ===============================
+    // Dark Mode Toggle
+    // ===============================
+    const themeSwitch = document.getElementById('themeSwitch');
+    themeSwitch.addEventListener('change', () => {
+      document.body.classList.toggle('dark', themeSwitch.checked);
+      localStorage.setItem('theme', themeSwitch.checked ? 'dark' : 'light');
+    });
+
+    // Load saved theme
+    if (localStorage.getItem('theme') === 'dark') {
+      themeSwitch.checked = true;
+      document.body.classList.add('dark');
+    }
+
+    // ===============================
+    // Attendance Logic
+    // ===============================
+    const VALID_USER = 'diptam';
+    const VALID_PASS = 'diptam';
+    const STUDENTS_KEY = 'sam_students';
+    const ATT_KEY = 'sam_attendance';
+
+    let students = [];
+    let attendance = {};
+    const dateInput = document.getElementById('attendanceDate');
+    // DOM elements referenced by the script (ensure these exist before usage)
+    const username = document.getElementById('username');
+    const password = document.getElementById('password');
+    const loginSection = document.getElementById('loginSection');
+    const mainContent = document.getElementById('mainContent');
+    const studentTbody = document.getElementById('studentTbody');
+    const qrDownloadLink = document.getElementById('qrDownloadLink');
+    const qrTitle = document.getElementById('qrTitle');
+    const qrBackdrop = document.getElementById('qrBackdrop');
+
+    function isoToday() { return new Date().toISOString().split('T')[0]; }
+    dateInput.value = isoToday();
+
+    function loadData() {
+      students = JSON.parse(localStorage.getItem(STUDENTS_KEY) || '[]');
+      attendance = JSON.parse(localStorage.getItem(ATT_KEY) || '{}');
+    }
+
+    function saveStudents() { localStorage.setItem(STUDENTS_KEY, JSON.stringify(students)); }
+    function saveAttendance() { localStorage.setItem(ATT_KEY, JSON.stringify(attendance)); }
+
+    function login() {
+      const u = username.value.trim();
+      const p = password.value.trim();
+      if (u === VALID_USER && p === VALID_PASS) {
+        loginSection.classList.add('hidden');
+        mainContent.classList.remove('hidden');
+        loadData();
+        renderStudentTable();
+        // load check logs and start scanner
+        loadCheckLogs();
+        renderCheckLogs();
+        startScanner();
+      } else alert('Invalid credentials!');
+    }
+
+    function logout() {
+      // stop scanner if running
+      stopScanner();
+      mainContent.classList.add('hidden');
+      loginSection.classList.remove('hidden');
+    }
+
+    function addStudent() {
+      const name = studentName.value.trim();
+      const roll = rollNo.value.trim();
+      const phone = phoneInput.value.trim();
+      const email = emailInput.value.trim();
+      const dept = department.value;
+
+      if (!name || !roll || !phone || !email || !dept) return alert('Please fill all fields!');
+      if (students.some(s => s.roll === roll)) return alert('Roll already exists!');
+
+      const s = { name, roll, phone, email, dept };
+      students.push(s);
+      saveStudents();
+      clearForm();
+      renderStudentTable();
+    }
+
+    const studentName = document.getElementById('studentName');
+    const rollNo = document.getElementById('rollNo');
+    const phoneInput = document.getElementById('phone');
+    const emailInput = document.getElementById('email');
+    const department = document.getElementById('department');
+
+    function clearForm() {
+      studentName.value = rollNo.value = phoneInput.value = emailInput.value = department.value = '';
+    }
+
+    function getAttendanceForDate(d) {
+      if (!attendance[d]) attendance[d] = {};
+      return attendance[d];
+    }
+
+    function togglePresent(roll, checked) {
+      const d = dateInput.value || isoToday();
+      const att = getAttendanceForDate(d);
+      att[roll] = checked;
+      saveAttendance();
+    }
+
+    function markAll(val) {
+      const d = dateInput.value || isoToday();
+      const att = getAttendanceForDate(d);
+      students.forEach(s => att[s.roll] = val);
+      saveAttendance();
+      renderStudentTable();
+    }
+
+    function renderStudentTable() {
+      const tbody = studentTbody;
+      tbody.innerHTML = '';
+      const d = dateInput.value || isoToday();
+      const att = getAttendanceForDate(d);
+
+      students.forEach((s, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${s.name}</td>
+          <td>${s.roll}</td>
+          <td>${s.dept}</td>
+          <td>${s.phone}</td>
+          <td>${s.email}</td>
+          <td><button onclick="showQR('${s.roll}')">QR</button></td>
+          <td><input type="checkbox" ${att[s.roll] ? 'checked' : ''} onchange="togglePresent('${s.roll}', this.checked)"></td>
+          <td><button class="student-row-btn" onclick="removeStudent('${s.roll}')">Remove</button></td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function removeStudent(roll) {
+      if (!confirm('Remove student ' + roll + '?')) return;
+      students = students.filter(s => s.roll !== roll);
+      saveStudents();
+      renderStudentTable();
+    }
+
+    function exportAttendance() {
+      const rows = [['Date', 'Roll', 'Name', 'Dept', 'Present']];
+      for (const d in attendance) {
+        const att = attendance[d];
+        students.forEach(s => rows.push([d, s.roll, s.name, s.dept, att[s.roll] ? 'Yes' : 'No']));
+      }
+      const csv = rows.map(r => r.map(cell => {
+        // Escape double quotes
+        if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"') || cell.includes('\n'))) {
+          return '"' + cell.replace(/"/g, '""') + '"';
+        }
+        return cell;
+      }).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'attendance.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ===============================
+    // QR Generator
+    // ===============================
+    function showQR(roll) {
+      const student = students.find(s => s.roll === roll);
+      if (!student) return alert('Student not found!');
+      const qrData = JSON.stringify({ roll: student.roll, name: student.name, email: student.email });
+      const qrDiv = document.getElementById('qrContainer');
+      qrDiv.innerHTML = '';
+      new QRCode(qrDiv, { text: qrData, width: 200, height: 200 });
+      qrDownloadLink.textContent = 'Download QR for ' + student.roll;
+      qrDownloadLink.onclick = () => downloadStudentQR(qrDiv, student.roll);
+      qrTitle.textContent = 'QR for ' + student.name;
+      qrBackdrop.style.display = 'flex';
+    }
+
+    function downloadStudentQR(qrDiv, roll) {
+      const qrImg = qrDiv.querySelector('img') || qrDiv.querySelector('canvas');
+      if (!qrImg) return alert('QR not ready yet!');
+      const dataUrl = qrImg.tagName === 'IMG' ? qrImg.src : qrImg.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = `Student_${roll}_QR.png`;
+      a.click();
+    }
+
+    function closeQrModal() {
+      qrBackdrop.style.display = 'none';
+    }
+
+    // ===============================
+// QR Scanner / Check-In Logic (FINAL FIX)
+// ===============================
+const CHECK_LOG_KEY = "sam_check_logs";
+let checkLogs = [];
+let html5QrCodeInstance = null;
+
+function loadCheckLogs() {
+  checkLogs = JSON.parse(localStorage.getItem(CHECK_LOG_KEY) || "[]");
+}
+
+function saveCheckLogs() {
+  localStorage.setItem(CHECK_LOG_KEY, JSON.stringify(checkLogs));
+}
+
+function renderCheckLogs() {
+  const tbody = document.getElementById("checkLogBody");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  const recent = checkLogs.slice(-10).reverse();
+  recent.forEach((log, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td style="width:40px">${i + 1}</td>
+      <td>${log.roll}</td>
+      <td>${log.name}</td>
+      <td>${log.action}</td>
+      <td>${log.time}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function findLastLogForRoll(roll) {
+  for (let i = checkLogs.length - 1; i >= 0; i--) {
+    if (checkLogs[i].roll === roll) return checkLogs[i];
+  }
+  return null;
+}
+
+function handleScanSuccess(decodedText) {
+  const scanStatus = document.getElementById("scanStatus");
+  if (!decodedText) return;
+
+  try {
+    const data = JSON.parse(decodedText);
+    const student = students.find(s => s.roll === data.roll);
+    if (!student) {
+      scanStatus.textContent = "❌ Unknown QR Code!";
+      scanStatus.style.color = "red";
+      return;
+    }
+
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    const lastLog = findLastLogForRoll(data.roll);
+    const action = lastLog && lastLog.action === "Check-In" ? "Check-Out" : "Check-In";
+
+    checkLogs.push({
+      roll: student.roll,
+      name: student.name,
+      action,
+      time: `${now.toLocaleDateString()} ${timeStr}`,
+    });
+    saveCheckLogs();
+    renderCheckLogs();
+
+    scanStatus.textContent = `✅ ${student.name} (${student.roll}) - ${action} recorded`;
+    scanStatus.style.color = "green";
+  } catch (e) {
+    scanStatus.textContent = "❌ Invalid QR Data!";
+    scanStatus.style.color = "red";
+  }
+}
+
+function handleScanError(error) {
+  // Silently ignore minor frame decode errors
+}
+
+async function startScanner() {
+  const scanStatus = document.getElementById("scanStatus");
+
+  if (html5QrCodeInstance) {
+    try {
+      await html5QrCodeInstance.stop();
+      html5QrCodeInstance.clear();
+    } catch (e) {}
+  }
+
+  if (typeof Html5Qrcode === "undefined") {
+    scanStatus.textContent = "❌ QR library not loaded!";
+    scanStatus.style.color = "red";
+    return;
+  }
+
+  try {
+    scanStatus.textContent = "🔍 Detecting camera...";
+    const cameras = await Html5Qrcode.getCameras();
+    if (!cameras.length) {
+      scanStatus.textContent = "❌ No camera found!";
+      scanStatus.style.color = "red";
+      return;
+    }
+
+    const cameraId = cameras[0].id;
+    html5QrCodeInstance = new Html5Qrcode("reader");
+
+    const config = {
+      fps: 10,
+      qrbox: { width: 250, height: 250 },
+      aspectRatio: 1.0,
+      rememberLastUsedCamera: true,
+    };
+
+    scanStatus.textContent = "📷 Starting camera...";
+    await html5QrCodeInstance.start(
+      cameraId,
+      config,
+      handleScanSuccess,
+      handleScanError
+    );
+
+    scanStatus.textContent = "✅ Scanner ready — show your QR code!";
+    scanStatus.style.color = "green";
+  } catch (err) {
+    console.error("Scanner error:", err);
+    scanStatus.textContent = "❌ Camera error: " + (err.message || err);
+    scanStatus.style.color = "red";
+  }
+}
+
+async function stopScanner() {
+  const scanStatus = document.getElementById("scanStatus");
+  if (html5QrCodeInstance) {
+    try {
+      await html5QrCodeInstance.stop();
+      html5QrCodeInstance.clear();
+    } catch (e) {}
+    html5QrCodeInstance = null;
+  }
+  if (scanStatus) {
+    scanStatus.textContent = "Scanner stopped.";
+    scanStatus.style.color = "gray";
+  }
+}
+
+function clearCheckLogs() {
+  checkLogs = [];
+  saveCheckLogs();
+  renderCheckLogs();
+}
+
+// Init check logs
+loadCheckLogs();
+renderCheckLogs();
+
+window.addEventListener("beforeunload", () => {
+  if (html5QrCodeInstance) {
+    try { html5QrCodeInstance.stop(); } catch {}
+  }
+});
+
+  </script>
+</body>
+</html>
+    
